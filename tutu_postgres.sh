@@ -56,6 +56,7 @@ export PG_CLUSTER_USER_SECRET_NAME=hippo-pguser-hippo
 export PGPASSWORD=$(kubectl get secrets -n postgres-operator "${PG_CLUSTER_USER_SECRET_NAME}" -o go-template='{{.data.password | base64decode}}')
 export PGUSER=$(kubectl get secrets -n postgres-operator "${PG_CLUSTER_USER_SECRET_NAME}" -o go-template='{{.data.user | base64decode}}')
 export PGDATABASE=$(kubectl get secrets -n postgres-operator "${PG_CLUSTER_USER_SECRET_NAME}" -o go-template='{{.data.dbname | base64decode}}')
+echo -e "\nPGPASSWORD=$PGPASSWORD\nPGUSER=$PGUSER\nPGDATABASE=$PGDATABASE\n"
 
 psql -h localhost
 
