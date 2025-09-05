@@ -60,6 +60,7 @@ echo -e "\nPGPASSWORD=$PGPASSWORD\nPGUSER=$PGUSER\nPGDATABASE=$PGDATABASE\n"
 
 psql -h localhost
 
+
 # Create a Schema with the following command.
 CREATE SCHEMA rhino AUTHORIZATION hippo;
 \q
