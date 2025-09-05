@@ -99,15 +99,17 @@ kubectl -n postgres-operator get pods
 kubectl -n postgres-operator get pods --show-labels | grep role
 # Choose a pod to delete (e.g., hippo-instance1-0 for the primary or a replica)
 
-kubectl -n postgres-operator delete po hippo-instance1-0 
+#Ex: "kubectl -n postgres-operator delete po hippo-instance1-0" with variable
+export PG_CLUSTER_PRIMARY_POD=$(kubectl get pod -n postgres-operator -o name -l postgres-operator.crunchydata.com/cluster=hippo,postgres-operator.crunchydata.com/role=master)
+kubectl -n postgres-operator delete $PG_CLUSTER_PRIMARY_POD
 # This will simulate a failure by removing the pod.
 
 # The Crunchy Postgres Operator will automatically detect the failure and attempt to recover the pod.
+kubectl -n postgres-operator get pods --show-labels | grep role
 
-kubectl -n postgres-operator get pods  -w
 # Check the PostgresCluster resource for events related to the recovery.
-
 kubectl -n postgres-operator describe postgresclusters hippo
+
 # Look for events such as:
 
 # The operator creating a new pod.
