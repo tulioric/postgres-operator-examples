@@ -72,7 +72,7 @@ CREATE SCHEMA rhino AUTHORIZATION hippo;
 k -n postgres-operator get postgresclusters hippo -o yaml
 
 # Edit the hippo postgres cluster in order to change the replica count.
-kubectl edit postgresclusters hippo -n postgres-operator
+kubectl -n postgres-operator edit postgresclusters hippo
     # |--> To scale the cluster, increase the number of replicas in the PostgresCluster to 3.
     spec:
     instances:
