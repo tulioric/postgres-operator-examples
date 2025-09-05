@@ -23,9 +23,9 @@ kubectl apply --server-side -k kustomize/install/default
 
 # To check on the status of your installation, you can run the following command.
 
-k -n postgres-operator get po -w
+kubectl -n postgres-operator get po -w
 
-k get crds | grep postgres
+kubectl get crds | grep postgres
 # If the PGO Pod is healthy, you should see output similar to this.
 
 # NAME                                READY   STATUS    RESTARTS   AGE
@@ -33,19 +33,19 @@ k get crds | grep postgres
 
 #Let's create a simple Postgres cluster. You can do this by executing the following command.
 
-k apply -k kustomize/postgres
+kubectl apply -k kustomize/postgres
 # This will create a Postgres cluster named hippo  in the postgres-operator  namespace.
 
 # You can track the progress of your cluster using the following commands.
 
-k -n postgres-operator get postgresclusters
+kubectl -n postgres-operator get postgresclusters
 
-k -n postgres-operator describe postgresclusters hippo
+kubectl -n postgres-operator describe postgresclusters hippo
 # As part of creating a Postgres cluster, the Postgres Operator creates a PostgreSQL user account. The credentials for this account are stored in a Secret that has the name hippo-pguser-rhino .
 
 # List the secres in the postgres-operator namespace with the following command.
 
-k -n postgres-operator get secrets
+kubectl -n postgres-operator get secrets
 
 # __!!! Open a new tab !!!__ by clicking the plus sign at the top of the window, and create a port forward. You can run the following commands to create a port forward.
 export PG_CLUSTER_PRIMARY_POD=$(kubectl get pod -n postgres-operator -o name -l postgres-operator.crunchydata.com/cluster=hippo,postgres-operator.crunchydata.com/role=master)
@@ -69,7 +69,7 @@ CREATE SCHEMA rhino AUTHORIZATION hippo;
 
 # Scaling a PostgreSQL cluster managed by the Crunchy Data Postgres Operator involves modifying the PostgresCluster Custom Resource Definition (CRD) to adjust the number of PostgreSQL instances (pods). The operator will handle the scaling process automatically once the changes are applied.
 # Fetch the current PostgresCluster YAML configuration to understand its structure. Look for the instances section under the spec field.
-k -n postgres-operator get postgresclusters hippo -o yaml
+kubectl -n postgres-operator get postgresclusters hippo -o yaml
 
 # Edit the hippo postgres cluster in order to change the replica count.
 kubectl -n postgres-operator edit postgresclusters hippo
@@ -93,21 +93,21 @@ kubectl logs -n postgres-operator -l postgres-operator.crunchydata.com/control-p
 # Simulating a pod failure in a Crunchy Data Postgres Operator-managed PostgreSQL cluster is a straightforward way to test the operator’s recovery mechanisms.
 
 # List the pods in your PostgreSQL cluster namespace.
-k -n postgres-operator get pods
+kubectl -n postgres-operator get pods
 # You can tell which pod is the leader with the following command.
 
-k -n postgres-operator get pods --show-labels | grep role
+kubectl -n postgres-operator get pods --show-labels | grep role
 # Choose a pod to delete (e.g., hippo-instance1-0 for the primary or a replica)
 
-k -n postgres-operator delete po hippo-instance1-0 
+kubectl -n postgres-operator delete po hippo-instance1-0 
 # This will simulate a failure by removing the pod.
 
 # The Crunchy Postgres Operator will automatically detect the failure and attempt to recover the pod.
 
-k -n postgres-operator get pods  -w
+kubectl -n postgres-operator get pods  -w
 # Check the PostgresCluster resource for events related to the recovery.
 
-k -n postgres-operator describe postgresclusters hippo
+kubectl -n postgres-operator describe postgresclusters hippo
 # Look for events such as:
 
 # The operator creating a new pod.
@@ -115,7 +115,7 @@ k -n postgres-operator describe postgresclusters hippo
 # Synchronization completion.
 # Check the operator logs for detailed information about how it handles the failure.
 
-k -n postgres-operator logs -l postgres-operator.crunchydata.com/control-plane=postgres-operator
+kubectl -n postgres-operator logs -l postgres-operator.crunchydata.com/control-plane=postgres-operator
 # Look for messages about:
     # Pod recreation
     # Replica promotion (if necessary)
